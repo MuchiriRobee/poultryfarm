@@ -41,7 +41,7 @@ const AuthScreen = ({ navigation }) => {
       const response = await axios.post(url, payload);
       await AsyncStorage.setItem('token', response.data.token);
       await AsyncStorage.setItem('farmName', response.data.farm_name);
-      navigation.navigate('Landing', { farmName: response.data.farm_name });
+      navigation.navigate('Main', { farmName: response.data.farm_name });
     } catch (error) {
       Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
     }
