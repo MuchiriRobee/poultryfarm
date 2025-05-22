@@ -11,10 +11,14 @@
     "ios": {
       "supportsTablet": true
     },
+    "permissions":["notifications"],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "permissions":[
+          "RECEIVE_BOOT_COMPLETED", "SCHEDULE_EXACT_ALARM"
+        ]
       },
       "edgeToEdgeEnabled": true
     },

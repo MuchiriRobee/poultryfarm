@@ -7,24 +7,46 @@ import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { WEATHER_API_KEY } from '@env';
 
-export default function LandingScreen({ navigation }) {
+export default function LandingScreen({ navigation, route }) {
   const [farmName, setFarmName] = useState('');
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hatchRateData, setHatchRateData] = useState({
+    labels: ['Batch 1', 'Batch 2', 'Batch 3', 'Batch 4'],
+    datasets: [{ data: [85, 90, 78, 92] }],
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch farmName from AsyncStorage
-        const storedFarmName = await AsyncStorage.get       
-Item('farmName');
-        if (storedFarmName) setFarmName(storedFarmName);
+        // Fetch farmName
+        const navFarmName = route.params?.farmName;
+        if (navFarmName) {
+          setFarmName(navFarmName);
+          await AsyncStorage.setItem('farmName', navFarmName);
+        } else {
+          const storedFarmName = await AsyncStorage.getItem('farmName');
+          if (storedFarmName) setFarmName(storedFarmName);
+        }
 
-        // Fetch weather (replace 'Nairobi' with your city or use geolocation)
-        const response = await axios.get(
+        // Fetch weather
+        const weatherResponse = await axios.get(
           `https://api.openweathermap.org/data/2.5/weather?q=Nairobi&appid=${WEATHER_API_KEY}&units=metric`
         );
-        setWeather(response.data);
+        setWeather(weatherResponse.data);
+
+        // Fetch hatch rate data
+        const token = await AsyncStorage.getItem('token');
+        const farmName = await AsyncStorage.getItem('farmName');
+        const batchResponse = await axios.get('http://192.168.1.66:5000/api/batch', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { farmName },
+        });
+        const batches = batchResponse.data.slice(0, 4); // Limit to 4 for chart
+        setHatchRateData({
+          labels: batches.map((b) => b.batch_name),
+          datasets: [{ data: batches.map((b) => b.hatch_rate || 0) }],
+        });
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -32,17 +54,12 @@ Item('farmName');
       }
     };
     fetchData();
-  }, []);
+  }, [route.params?.farmName]);
 
-  // Mock data for charts (to be replaced with real data later)
+  // Mock data for feed consumption
   const feedConsumptionData = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
     datasets: [{ data: [50, 60, 55, 70, 65] }],
-  };
-
-  const hatchRateData = {
-    labels: ['Batch 1', 'Batch 2', 'Batch 3', 'Batch 4'],
-    datasets: [{ data: [85, 90, 78, 92] }],
   };
 
   const chartConfig = {

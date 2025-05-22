@@ -6,6 +6,7 @@ import AuthScreen from '../screens/AuthScreen';
 import LandingScreen from '../screens/LandingScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import HelpScreen from '../screens/HelpScreen';
+import HatchingRateScreen from '../screens/HatchingRateScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -14,6 +15,7 @@ function MainDrawer() {
   return (
     <Drawer.Navigator initialRouteName="Landing">
       <Drawer.Screen name="Landing" component={LandingScreen} options={{ title: 'Home' }} />
+      <Drawer.Screen name="HatchingRate" component={HatchingRateScreen} options={{ title: 'Hatching Rate' }} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
       <Drawer.Screen name="Help" component={HelpScreen} />
     </Drawer.Navigator>
